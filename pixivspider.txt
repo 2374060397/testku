@@ -1,3 +1,4 @@
+
 import requests
 import re
 import urllib.request
@@ -7,14 +8,16 @@ from bs4 import BeautifulSoup
 import urllib
 import random
 import time
+import concurrent.futures
 
 url = 'https://www.pixiv.net/ranking.php?mode=daily'
 r = requests.get(url).text
 
 rese = re.compile(r'data-filter="thumbnail-filter lazy-image"data-src="(.+?\.jpg)"data-type')
-items = re.findall(rese, r)
+item = re.findall(rese, r)
 
-for item in items:  # 源图的url
+#for item in items:  # 源图的url
+def get(item):
     # print (item)
     surl0 = item.replace('c/240x480/img-master', 'img-original')
     surl1 = surl0.replace('_master1200', '')
@@ -48,7 +51,7 @@ for item in items:  # 源图的url
 
     with open(local, 'wb') as img:
         img.write(data)
-    
-
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    executor.map(get, item)
 
 
